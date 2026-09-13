@@ -1778,6 +1778,7 @@
                     wifi_name,
                     wifi_password,
                     public_token,
+                    short_code,
                     contact_name,
                     contact_position,
                     contact_cell,
@@ -2795,7 +2796,7 @@
 
                         <button
                             class="btn btn-dark"
-                            onclick="openCustomerPage('${restaurant.public_token}')"
+                            onclick="openCustomerPage('${restaurant.short_code}')"
                         >
                             Open
                         </button>
@@ -3099,6 +3100,9 @@
                 values.public_token =
                     crypto.randomUUID();
 
+                values.short_code =
+                    generateShortCode();
+
 
                 const result =
                     await supabaseClient
@@ -3227,12 +3231,12 @@
     ========================================================= */
 
     window.openCustomerPage =
-        function(publicToken) {
+        function(shortCode) {
 
-            if (!publicToken) {
+            if (!shortCode) {
 
                 alert(
-                    "This restaurant does not have a public token."
+                    "This restaurant does not have a short GuestConnect code."
                 );
 
                 return;
@@ -3242,7 +3246,7 @@
 
             const url =
                 getCustomerUrl(
-                    publicToken
+                    shortCode
                 );
 
 
@@ -3255,7 +3259,7 @@
 
 
     function getCustomerUrl(
-        publicToken
+        shortCode
     ) {
 
         const url =
@@ -3266,12 +3270,42 @@
 
 
         url.searchParams.set(
-            "token",
-            publicToken
+            "code",
+            shortCode
         );
 
 
         return url.href;
+
+    }
+
+
+    /* =========================================================
+       SHORT QR CODE
+
+       The QR stores only a short 6-character code.
+       This keeps the printed QR much simpler.
+    ========================================================= */
+
+    function generateShortCode() {
+
+        const alphabet =
+            "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+        let code = "";
+
+        for (let i = 0; i < 6; i++) {
+
+            const index =
+                crypto.getRandomValues(
+                    new Uint32Array(1)
+                )[0] % alphabet.length;
+
+            code += alphabet[index];
+
+        }
+
+        return code;
 
     }
 
@@ -3300,10 +3334,10 @@
             }
 
 
-            if (!restaurant.public_token) {
+            if (!restaurant.short_code) {
 
                 alert(
-                    "This restaurant does not have a public token."
+                    "This restaurant does not have a short GuestConnect code yet."
                 );
 
                 return;
@@ -3317,7 +3351,7 @@
 
             const url =
                 getCustomerUrl(
-                    restaurant.public_token
+                    restaurant.short_code
                 );
 
 
@@ -3351,7 +3385,7 @@
                     width: 260,
                     height: 260,
                     correctLevel:
-                        QRCode.CorrectLevel.H
+                        QRCode.CorrectLevel.M
                 }
             );
 
@@ -3497,6 +3531,9 @@
             const newToken =
                 crypto.randomUUID();
 
+            const newShortCode =
+                generateShortCode();
+
 
             const {
                 error
@@ -3504,7 +3541,8 @@
                 await supabaseClient
                     .from("restaurants")
                     .update({
-                        public_token: newToken
+                        public_token: newToken,
+                        short_code: newShortCode
                     })
                     .eq(
                         "id",

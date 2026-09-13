@@ -510,6 +510,9 @@
     const params =
         new URLSearchParams(window.location.search);
 
+    const publicCode =
+        params.get("code");
+
     const publicToken =
         params.get("token");
 
@@ -522,10 +525,10 @@
 
     async function loadRestaurant() {
 
-        if (!publicToken) {
+        if (!publicCode && !publicToken) {
 
             showError(
-                "This GuestConnect QR code is missing its restaurant token."
+                "This GuestConnect QR code is missing its restaurant code."
             );
 
             return;
@@ -533,13 +536,38 @@
 
         try {
 
-            const { data, error } =
-                await supabaseClient.rpc(
-                    "get_public_restaurant",
-                    {
-                        p_token: publicToken
-                    }
-                );
+            let data;
+            let error;
+
+            if (publicCode) {
+
+                const result =
+                    await supabaseClient.rpc(
+                        "get_public_restaurant_by_code",
+                        {
+                            p_code: publicCode
+                        }
+                    );
+
+                data = result.data;
+                error = result.error;
+
+            } else {
+
+                // Backward compatibility:
+                // old token-based QR codes continue to work.
+                const result =
+                    await supabaseClient.rpc(
+                        "get_public_restaurant",
+                        {
+                            p_token: publicToken
+                        }
+                    );
+
+                data = result.data;
+                error = result.error;
+
+            }
 
             if (error) {
                 throw error;
@@ -789,13 +817,37 @@
 
         try {
 
-            const { data, error } =
-                await supabaseClient.rpc(
-                    "report_wifi_problem",
-                    {
-                        p_token: publicToken
-                    }
-                );
+            let data;
+            let error;
+
+            if (publicCode) {
+
+                const result =
+                    await supabaseClient.rpc(
+                        "report_wifi_problem_by_code",
+                        {
+                            p_code: publicCode
+                        }
+                    );
+
+                data = result.data;
+                error = result.error;
+
+            } else {
+
+                // Backward compatibility for old token links.
+                const result =
+                    await supabaseClient.rpc(
+                        "report_wifi_problem",
+                        {
+                            p_token: publicToken
+                        }
+                    );
+
+                data = result.data;
+                error = result.error;
+
+            }
 
             if (error) {
                 throw error;
