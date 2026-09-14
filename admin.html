@@ -3264,15 +3264,13 @@
 
         const url =
             new URL(
-                "restaurant.html",
+                "c.html",
                 window.location.href
             );
 
-
-        url.searchParams.set(
-            "code",
-            shortCode
-        );
+        // The shortest practical format on the current GitHub Pages URL.
+        // c.html reads the value directly from the query string.
+        url.search = "?" + encodeURIComponent(shortCode);
 
 
         return url.href;
