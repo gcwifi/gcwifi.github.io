@@ -3262,18 +3262,11 @@
         shortCode
     ) {
 
-        const url =
-            new URL(
-                "c.html",
-                window.location.href
-            );
+        const baseUrl =
+            window.location.origin +
+            "/";
 
-        // The shortest practical format on the current GitHub Pages URL.
-        // c.html reads the value directly from the query string.
-        url.search = "?" + encodeURIComponent(shortCode);
-
-
-        return url.href;
+        return baseUrl + encodeURIComponent(shortCode);
 
     }
 

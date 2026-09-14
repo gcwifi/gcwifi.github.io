@@ -1,148 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>GuestConnect</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f6f8;
-      color: #17202a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 520px;
-      text-align: center;
-    }
-
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 40px 25px;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.08);
-    }
-
-    .logo {
-      font-size: 38px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .tagline {
-      font-size: 18px;
-      color: #64748b;
-      margin-bottom: 30px;
-    }
-
-    .info {
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 25px;
-      line-height: 1.6;
-      color: #475569;
-    }
-
-    .scan {
-      font-size: 17px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .small {
-      font-size: 14px;
-      color: #64748b;
-    }
-
-    .admin-link {
-      display: inline-block;
-      margin-top: 25px;
-      color: #64748b;
-      text-decoration: none;
-      font-size: 13px;
-    }
-
-    .admin-link:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #94a3b8;
-    }
-
-  </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuestConnect</title>
 </head>
-
 <body>
+<script>
+(function () {
+    const rawCode = window.location.search.substring(1).trim();
 
-  <div class="container">
+    if (rawCode) {
+        const code = decodeURIComponent(rawCode);
+        window.location.replace(
+            "c.html?c=" + encodeURIComponent(code)
+        );
+        return;
+    }
 
-    <div class="card">
+    window.location.replace("restaurant.html");
+})();
+</script>
 
-      <div class="logo">
-        GuestConnect
-      </div>
-
-      <div class="tagline">
-        Restaurant Wi-Fi made simple.
-      </div>
-
-      <div class="info">
-
-        <div class="scan">
-          Looking for restaurant Wi-Fi?
-        </div>
-
-        <div class="small">
-          Scan a GuestConnect QR code at a participating
-          restaurant to see the Wi-Fi details for that
-          specific location.
-        </div>
-
-      </div>
-
-      <div class="small">
-        No restaurant selection is needed.
-        The QR code automatically identifies the location.
-      </div>
-
-      <a
-        class="admin-link"
-        href="admin.html"
-      >
-        Admin
-      </a>
-
-    </div>
-
-    <footer>
-      © GuestConnect
-    </footer>
-
-  </div>
-
+<noscript>
+    <p>Please enable JavaScript to use GuestConnect.</p>
+</noscript>
 </body>
 </html>
