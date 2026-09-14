@@ -5,25 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GuestConnect</title>
 </head>
+
 <body>
+
 <script>
 (function () {
-    const rawCode = window.location.search.substring(1).trim();
 
+    /*
+        GuestConnect root QR routing
+
+        Example QR URL:
+        https://gcwifi.github.io/?B61349
+
+        The code after the ? is the restaurant code.
+    */
+
+    const rawCode =
+        window.location.search.substring(1).trim();
+
+    /*
+        If a restaurant code exists,
+        send the customer to the customer page.
+    */
     if (rawCode) {
-        const code = decodeURIComponent(rawCode);
+
+        const code =
+            decodeURIComponent(rawCode);
+
         window.location.replace(
-            "c.html?c=" + encodeURIComponent(code)
+            "restaurant.html?code=" +
+            encodeURIComponent(code)
         );
+
         return;
     }
 
-    window.location.replace("restaurant.html");
+    /*
+        If someone opens the main website
+        without a restaurant code,
+        send them to the normal restaurant page.
+    */
+    window.location.replace(
+        "restaurant.html"
+    );
+
 })();
 </script>
 
 <noscript>
-    <p>Please enable JavaScript to use GuestConnect.</p>
+    <p>
+        Please enable JavaScript to use GuestConnect.
+    </p>
 </noscript>
+
 </body>
 </html>
