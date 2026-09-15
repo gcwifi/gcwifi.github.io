@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>GuestConnect Admin</title>
+    <!-- GuestConnect URL System v2 -->
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3262,12 +3263,21 @@
         shortCode
     ) {
 
-        const baseUrl =
-            window.location.origin +
-            "/";
+        if (!shortCode) {
+            return "";
+        }
 
-        return baseUrl + "?" + encodeURIComponent(shortCode);
+        /*
+           GuestConnect uses one customer URL system only:
 
+           https://gcwifi.github.io/?SHORTCODE
+        */
+        return (
+            "https://gcwifi.github.io/?" +
+            encodeURIComponent(
+                String(shortCode).trim().toUpperCase()
+            )
+        );
     }
 
 
