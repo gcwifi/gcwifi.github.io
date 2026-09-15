@@ -513,9 +513,6 @@
     const publicCode =
         params.get("code");
 
-    const publicToken =
-        params.get("token");
-
     let currentRestaurantID = null;
 
 
@@ -525,7 +522,7 @@
 
     async function loadRestaurant() {
 
-        if (!publicCode && !publicToken) {
+        if (!publicCode) {
 
             showError(
                 "This GuestConnect QR code is missing its restaurant code."
@@ -536,38 +533,16 @@
 
         try {
 
-            let data;
-            let error;
+            const result =
+                await supabaseClient.rpc(
+                    "get_public_restaurant_by_code",
+                    {
+                        p_code: publicCode
+                    }
+                );
 
-            if (publicCode) {
-
-                const result =
-                    await supabaseClient.rpc(
-                        "get_public_restaurant_by_code",
-                        {
-                            p_code: publicCode
-                        }
-                    );
-
-                data = result.data;
-                error = result.error;
-
-            } else {
-
-                // Backward compatibility:
-                // old token-based QR codes continue to work.
-                const result =
-                    await supabaseClient.rpc(
-                        "get_public_restaurant",
-                        {
-                            p_token: publicToken
-                        }
-                    );
-
-                data = result.data;
-                error = result.error;
-
-            }
+            const data = result.data;
+            const error = result.error;
 
             if (error) {
                 throw error;
@@ -817,37 +792,16 @@
 
         try {
 
-            let data;
-            let error;
+            const result =
+                await supabaseClient.rpc(
+                    "report_wifi_problem_by_code",
+                    {
+                        p_code: publicCode
+                    }
+                );
 
-            if (publicCode) {
-
-                const result =
-                    await supabaseClient.rpc(
-                        "report_wifi_problem_by_code",
-                        {
-                            p_code: publicCode
-                        }
-                    );
-
-                data = result.data;
-                error = result.error;
-
-            } else {
-
-                // Backward compatibility for old token links.
-                const result =
-                    await supabaseClient.rpc(
-                        "report_wifi_problem",
-                        {
-                            p_token: publicToken
-                        }
-                    );
-
-                data = result.data;
-                error = result.error;
-
-            }
+            const data = result.data;
+            const error = result.error;
 
             if (error) {
                 throw error;

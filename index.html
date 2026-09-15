@@ -4,59 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GuestConnect</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background: #f4f8ff;
+            color: #17324d;
+            text-align: center;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .card {
+            max-width: 420px;
+            background: white;
+            border-radius: 18px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.08);
+        }
+        h1 { margin: 0 0 10px; }
+        p { line-height: 1.5; color: #5b6b7a; }
+    </style>
 </head>
-
 <body>
+<div class="card">
+    <h1>GuestConnect</h1>
+    <p>Scan a GuestConnect QR code at a participating restaurant to view its Wi-Fi details.</p>
+</div>
 
 <script>
 (function () {
+    const rawCode = window.location.search.substring(1).trim();
 
-    /*
-        GuestConnect root QR routing
-
-        Example QR URL:
-        https://gcwifi.github.io/?B61349
-
-        The code after the ? is the restaurant code.
-    */
-
-    const rawCode =
-        window.location.search.substring(1).trim();
-
-    /*
-        If a restaurant code exists,
-        send the customer to the customer page.
-    */
-    if (rawCode) {
-
-        const code =
-            decodeURIComponent(rawCode);
-
-        window.location.replace(
-            "restaurant.html?code=" +
-            encodeURIComponent(code)
-        );
-
+    if (!rawCode) {
         return;
     }
 
-    /*
-        If someone opens the main website
-        without a restaurant code,
-        send them to the normal restaurant page.
-    */
-    window.location.replace(
-        "restaurant.html"
-    );
+    const code = decodeURIComponent(rawCode);
 
+    if (!code) {
+        return;
+    }
+
+    window.location.replace(
+        "restaurant.html?code=" + encodeURIComponent(code)
+    );
 })();
 </script>
-
-<noscript>
-    <p>
-        Please enable JavaScript to use GuestConnect.
-    </p>
-</noscript>
-
 </body>
 </html>
