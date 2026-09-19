@@ -8,6 +8,7 @@
     <!-- GuestConnect URL System v2 -->
     <!-- GuestConnect Admin Update: No-Visit List -->
     <!-- GuestConnect Admin Update: Clickable No-Visit Count -->
+    <!-- GuestConnect Admin Update: No-Visit Button Fix v2 -->
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -531,6 +532,7 @@
         }
         .analytics-click-value {
             display: block;
+            touch-action: manipulation;
             border: none;
             background: transparent;
             color: #17202a;
@@ -1058,7 +1060,7 @@
                         id="analyticsInactiveRestaurants"
                         class="analytics-click-value"
                         type="button"
-                        onclick="showNoVisitRestaurants()"
+                        data-action="show-no-visits"
                         title="Show restaurants with no visits today"
                     >
                         0
@@ -4364,6 +4366,27 @@
                 }
             );
 
+    }
+
+
+    /* =========================================================
+       NO VISITS BUTTON
+       Uses addEventListener so the clickable dashboard number
+       does not depend on an inline onclick handler.
+    ========================================================= */
+
+    const noVisitsButton =
+        document.getElementById(
+            "analyticsInactiveRestaurants"
+        );
+
+    if (noVisitsButton) {
+        noVisitsButton.addEventListener(
+            "click",
+            function() {
+                window.showNoVisitRestaurants();
+            }
+        );
     }
 
 
