@@ -6,6 +6,8 @@
 
     <title>GuestConnect Admin</title>
     <!-- GuestConnect URL System v2 -->
+    <!-- GuestConnect Admin Update: No-Visit List -->
+    <!-- GuestConnect Admin Update: Clickable No-Visit Count -->
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -527,6 +529,30 @@
             font-weight: 800;
             margin-top: 5px;
         }
+        .analytics-click-value {
+            display: block;
+            border: none;
+            background: transparent;
+            color: #17202a;
+            font-size: 25px;
+            font-weight: 800;
+            margin-top: 5px;
+            padding: 0;
+            line-height: 1.2;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .analytics-click-value:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .analytics-click-value:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
 
         .chart-container {
             position: relative;
@@ -1028,12 +1054,15 @@
                     <div class="analytics-box-label">
                         NO VISITS TODAY
                     </div>
-                    <div
-                        class="analytics-box-value"
+                    <button
                         id="analyticsInactiveRestaurants"
+                        class="analytics-click-value"
+                        type="button"
+                        onclick="showNoVisitRestaurants()"
+                        title="Show restaurants with no visits today"
                     >
                         0
-                    </div>
+                    </button>
                 </div>
 
                 <div class="analytics-box">
@@ -1140,6 +1169,45 @@
         </section>
 
     </main>
+
+</div>
+
+
+<!-- =========================================================
+     NO VISITS TODAY MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="noVisitModal"
+    onclick="if (event.target === this) closeModal('noVisitModal')"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Restaurants with No Visits Today</h2>
+                <div class="section-subtitle">
+                    These restaurants have not recorded a visit since midnight today.
+                </div>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('noVisitModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div id="noVisitContainer">
+            <div class="loading">Loading...</div>
+        </div>
+
+    </div>
 
 </div>
 
@@ -2103,6 +2171,56 @@
             average.toFixed(1);
 
     }
+
+
+    /* =========================================================
+       NO VISITS TODAY LIST
+    ========================================================= */
+
+    window.showNoVisitRestaurants =
+        function() {
+
+            const container =
+                document.getElementById("noVisitContainer");
+
+            const today = startOfToday();
+
+            const inactiveRestaurants =
+                restaurants.filter(function(restaurant) {
+                    return countRestaurantVisitsSince(
+                        restaurant.id,
+                        today
+                    ) === 0;
+                });
+
+            if (inactiveRestaurants.length === 0) {
+                container.innerHTML = `
+                    <div class="empty">
+                        🎉 Every restaurant has recorded at least one visit today.
+                    </div>
+                `;
+                openModal("noVisitModal");
+                return;
+            }
+
+            let html = "";
+
+            inactiveRestaurants.forEach(function(restaurant) {
+                html += `
+                    <div class="report-item">
+                        <div style="font-weight:800; font-size:16px;">
+                            ${escapeHtml(restaurant.name)}
+                        </div>
+                        <div class="report-date" style="margin-top:4px; margin-bottom:0;">
+                            📍 ${escapeHtml(restaurant.location)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            openModal("noVisitModal");
+        };
 
 
     /* =========================================================
