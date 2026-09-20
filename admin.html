@@ -9,6 +9,7 @@
     <!-- GuestConnect Admin Update: No-Visit List -->
     <!-- GuestConnect Admin Update: Clickable No-Visit Count -->
     <!-- GuestConnect Admin Update: No-Visit Button Fix v2 -->
+    <!-- GuestConnect Admin Update: Compact Restaurant Cards + Search -->
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -251,6 +252,42 @@
             flex-wrap: wrap;
         }
 
+        .restaurant-header-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .restaurant-search {
+            display: none;
+            width: 190px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 9px 11px;
+            background: #fff;
+            color: #111827;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .restaurant-search.visible {
+            display: block;
+        }
+
+        .restaurant-search:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.10);
+        }
+
+        .search-btn {
+            min-width: 42px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+
         .section-title {
             margin: 0;
             font-size: 21px;
@@ -332,8 +369,8 @@
 
         .restaurant-card {
             border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px;
             background: #fff;
         }
 
@@ -345,7 +382,7 @@
         }
 
         .restaurant-name {
-            font-size: 21px;
+            font-size: 19px;
             font-weight: 800;
             margin-bottom: 4px;
         }
@@ -364,9 +401,9 @@
 
         .wifi-box {
             background: #f8fafc;
-            border-radius: 10px;
-            padding: 13px;
-            margin-top: 18px;
+            border-radius: 9px;
+            padding: 11px;
+            margin-top: 13px;
         }
 
         .wifi-row {
@@ -397,16 +434,17 @@
         ========================= */
 
         .contact-box {
-            margin-top: 15px;
+            margin-top: 12px;
             border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 14px;
+            border-radius: 9px;
+            padding: 11px;
             background: #fff;
         }
 
         .contact-title {
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .contact-row {
@@ -442,14 +480,14 @@
         .restaurant-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 15px;
+            gap: 7px;
+            margin-top: 12px;
         }
 
         .mini-stat {
             background: #f8fafc;
-            border-radius: 9px;
-            padding: 11px;
+            border-radius: 8px;
+            padding: 8px;
             text-align: center;
         }
 
@@ -460,7 +498,7 @@
         }
 
         .mini-stat-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             margin-top: 3px;
         }
@@ -470,8 +508,8 @@
         ========================= */
 
         .report-warning {
-            margin-top: 14px;
-            padding: 11px 13px;
+            margin-top: 11px;
+            padding: 9px 11px;
             background: #fff7ed;
             border: 1px solid #fed7aa;
             color: #9a3412;
@@ -481,8 +519,8 @@
         }
 
         .report-ok {
-            margin-top: 14px;
-            padding: 11px 13px;
+            margin-top: 11px;
+            padding: 9px 11px;
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             color: #166534;
@@ -498,8 +536,8 @@
         .card-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 18px;
+            gap: 7px;
+            margin-top: 13px;
         }
 
         /* =========================
@@ -838,6 +876,33 @@
         }
 
         @media (max-width: 450px) {
+
+            .restaurant-header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .restaurant-search {
+                width: 155px;
+            }
+
+            .restaurant-card {
+                padding: 13px;
+            }
+
+            .wifi-row {
+                font-size: 13px;
+            }
+
+            .restaurant-name {
+                font-size: 18px;
+            }
+
+            .card-actions .btn {
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -1150,12 +1215,35 @@
                     </div>
                 </div>
 
-                <button
-                    class="btn btn-primary"
-                    id="addRestaurantBtn"
-                >
-                    + Add Restaurant
-                </button>
+                <div class="restaurant-header-actions">
+
+                    <button
+                        class="btn btn-secondary search-btn"
+                        id="restaurantSearchBtn"
+                        type="button"
+                        aria-label="Search restaurants"
+                        title="Search restaurants"
+                    >
+                        🔎 Search
+                    </button>
+
+                    <input
+                        id="restaurantSearchInput"
+                        class="restaurant-search"
+                        type="search"
+                        placeholder="Search restaurants..."
+                        aria-label="Search restaurants"
+                        autocomplete="off"
+                    >
+
+                    <button
+                        class="btn btn-primary"
+                        id="addRestaurantBtn"
+                    >
+                        + Add Restaurant
+                    </button>
+
+                </div>
 
             </div>
 
@@ -2626,6 +2714,16 @@
                 "restaurantContainer"
             );
 
+        const searchInput =
+            document.getElementById(
+                "restaurantSearchInput"
+            );
+
+        const searchTerm =
+            searchInput
+                ? searchInput.value.trim().toLowerCase()
+                : "";
+
 
         if (restaurants.length === 0) {
 
@@ -2636,12 +2734,47 @@
 
         }
 
+        const filteredRestaurants =
+            restaurants.filter(function(restaurant) {
+
+                if (!searchTerm) {
+                    return true;
+                }
+
+                const searchableText = [
+                    restaurant.name,
+                    restaurant.location,
+                    restaurant.id,
+                    restaurant.short_code
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+                return searchableText.includes(searchTerm);
+
+            });
+
+
+        if (filteredRestaurants.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No restaurants found for
+                    <strong>"${escapeHtml(searchTerm)}"</strong>.
+                </div>
+            `;
+
+            return;
+
+        }
+
 
         let html =
             '<div class="restaurant-grid">';
 
 
-        restaurants.forEach(function(restaurant) {
+        filteredRestaurants.forEach(function(restaurant) {
 
             const today =
                 countRestaurantVisitsSince(
@@ -4387,6 +4520,56 @@
                 window.showNoVisitRestaurants();
             }
         );
+    }
+
+
+    /* =========================================================
+       RESTAURANT SEARCH
+       Keeps the list compact and lets the admin quickly find
+       a restaurant by name, location, ID or short code.
+    ========================================================= */
+
+    const restaurantSearchButton =
+        document.getElementById(
+            "restaurantSearchBtn"
+        );
+
+    const restaurantSearchInput =
+        document.getElementById(
+            "restaurantSearchInput"
+        );
+
+    if (restaurantSearchButton && restaurantSearchInput) {
+
+        restaurantSearchButton.addEventListener(
+            "click",
+            function() {
+
+                const isVisible =
+                    restaurantSearchInput.classList
+                        .contains("visible");
+
+                restaurantSearchInput.classList.toggle(
+                    "visible"
+                );
+
+                if (!isVisible) {
+                    restaurantSearchInput.focus();
+                } else {
+                    restaurantSearchInput.value = "";
+                    renderRestaurants();
+                }
+
+            }
+        );
+
+        restaurantSearchInput.addEventListener(
+            "input",
+            function() {
+                renderRestaurants();
+            }
+        );
+
     }
 
 
