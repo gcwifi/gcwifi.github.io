@@ -370,8 +370,115 @@
         .restaurant-card {
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            padding: 15px;
             background: #fff;
+            overflow: hidden;
+        }
+
+        .restaurant-card[open] {
+            padding: 0 15px 15px 15px;
+        }
+
+        .restaurant-summary {
+            display: grid;
+            grid-template-columns: minmax(120px, 1fr) minmax(190px, 1.25fr) auto;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .restaurant-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .restaurant-summary::after {
+            content: "›";
+            font-size: 22px;
+            line-height: 1;
+            color: #9ca3af;
+            transform: rotate(0deg);
+            transition: transform 0.15s ease;
+        }
+
+        .restaurant-card[open] .restaurant-summary::after {
+            transform: rotate(90deg);
+        }
+
+        .summary-main {
+            min-width: 0;
+        }
+
+        .summary-main .restaurant-name {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .summary-main .restaurant-location {
+            display: block;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .summary-wifi {
+            display: grid;
+            gap: 3px;
+            min-width: 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 7px 9px;
+        }
+
+        .summary-wifi-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            line-height: 1.25;
+        }
+
+        .summary-wifi-row .wifi-label {
+            flex: 0 0 auto;
+        }
+
+        .summary-wifi-row .wifi-value {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .summary-status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 900;
+        }
+
+        .summary-status-ok {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .summary-status-warning {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .restaurant-details {
+            padding-top: 2px;
         }
 
         .restaurant-top {
@@ -887,7 +994,44 @@
             }
 
             .restaurant-card {
-                padding: 13px;
+                padding: 0;
+            }
+
+            .restaurant-card[open] {
+                padding: 0 10px 10px 10px;
+            }
+
+            .restaurant-summary {
+                grid-template-columns: minmax(100px, 1fr) minmax(125px, 1.15fr) auto;
+                gap: 7px;
+                padding: 9px 8px;
+            }
+
+            .summary-main .restaurant-name {
+                font-size: 14px;
+            }
+
+            .summary-main .restaurant-location {
+                font-size: 10px;
+            }
+
+            .summary-wifi {
+                padding: 6px 7px;
+            }
+
+            .summary-wifi-row {
+                font-size: 9px;
+                gap: 5px;
+            }
+
+            .summary-wifi-row .wifi-value {
+                font-size: 10px;
+            }
+
+            .summary-status {
+                width: 21px;
+                height: 21px;
+                font-size: 13px;
             }
 
             .wifi-row {
@@ -2805,57 +2949,44 @@
 
             html += `
 
-                <div class="restaurant-card">
+                <details class="restaurant-card">
 
-                    <div class="restaurant-top">
+                    <summary class="restaurant-summary">
 
-                        <div>
+                        <span class="summary-main">
 
-                            <div class="restaurant-name">
+                            <span class="restaurant-name">
                                 ${escapeHtml(restaurant.name)}
-                            </div>
+                            </span>
 
-                            <div class="restaurant-location">
+                            <span class="restaurant-location">
                                 📍 ${escapeHtml(restaurant.location)}
-                            </div>
+                            </span>
 
-                            <div class="restaurant-id">
-                                ID: ${escapeHtml(restaurant.id)}
-                            </div>
+                        </span>
 
-                        </div>
+                        <span class="summary-wifi">
 
-                    </div>
+                            <span class="summary-wifi-row">
+                                <span class="wifi-label">Wi-Fi</span>
+                                <span class="wifi-value">${escapeHtml(restaurant.wifi_name)}</span>
+                            </span>
+
+                            <span class="summary-wifi-row">
+                                <span class="wifi-label">Password</span>
+                                <span class="wifi-value">${escapeHtml(restaurant.wifi_password)}</span>
+                            </span>
+
+                        </span>
+
+                        <span class="summary-status ${reportCount > 0 ? "summary-status-warning" : "summary-status-ok"}" title="${reportCount > 0 ? "Unresolved Wi-Fi report" : "No unresolved Wi-Fi reports"}">
+                            ${reportCount > 0 ? "!" : "✓"}
+                        </span>
+
+                    </summary>
 
 
-                    <div class="wifi-box">
-
-                        <div class="wifi-row">
-
-                            <div class="wifi-label">
-                                Wi-Fi
-                            </div>
-
-                            <div class="wifi-value">
-                                ${escapeHtml(restaurant.wifi_name)}
-                            </div>
-
-                        </div>
-
-
-                        <div class="wifi-row">
-
-                            <div class="wifi-label">
-                                Password
-                            </div>
-
-                            <div class="wifi-value">
-                                ${escapeHtml(restaurant.wifi_password)}
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <div class="restaurant-details">
 
 
                     <div class="contact-box">
@@ -3089,7 +3220,9 @@
 
                     </div>
 
-                </div>
+                    </div>
+
+                </details>
 
             `;
 
