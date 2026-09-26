@@ -10,6 +10,7 @@
     <!-- GuestConnect Admin Update: Clickable No-Visit Count -->
     <!-- GuestConnect Admin Update: No-Visit Button Fix v2 -->
     <!-- GuestConnect Admin Update: Compact Restaurant Cards + Search -->
+    <!-- GuestConnect Admin Update: Counted Visits + Anonymous Unique Visitors -->
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1178,28 +1179,33 @@
         <div class="stats-grid">
 
             <div class="stat-card">
-                <div class="stat-label">TODAY</div>
+                <div class="stat-label">VISITS TODAY</div>
                 <div class="stat-value" id="statToday">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">LAST 7 DAYS</div>
+                <div class="stat-label">VISITS — 7 DAYS</div>
                 <div class="stat-value" id="stat7Days">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">LAST 30 DAYS</div>
+                <div class="stat-label">VISITS — 30 DAYS</div>
                 <div class="stat-value" id="stat30Days">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">THIS YEAR</div>
+                <div class="stat-label">VISITS — YEAR</div>
                 <div class="stat-value" id="statYear">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">ALL TIME</div>
+                <div class="stat-label">VISITS — ALL TIME</div>
                 <div class="stat-value" id="statAllTime">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">UNIQUE VISITORS — 30 DAYS</div>
+                <div class="stat-value" id="statUnique30">0</div>
             </div>
 
         </div>
@@ -1828,11 +1834,35 @@
 
             <div class="analytics-box">
                 <div class="analytics-box-label">
-                    ALL TIME
+                    ALL TIME VISITS
                 </div>
                 <div
                     class="analytics-box-value"
                     id="restaurantAnalyticsAll"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="analytics-box">
+                <div class="analytics-box-label">
+                    UNIQUE VISITORS (30 DAYS)
+                </div>
+                <div
+                    class="analytics-box-value"
+                    id="restaurantAnalyticsUnique30"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="analytics-box">
+                <div class="analytics-box-label">
+                    UNIQUE VISITORS (ALL TIME)
+                </div>
+                <div
+                    class="analytics-box-value"
+                    id="restaurantAnalyticsUniqueAll"
                 >
                     0
                 </div>
@@ -2133,7 +2163,7 @@
                 await supabaseClient
                     .from("visits")
                     .select(
-                        "id, restaurant_id, visited_at"
+                        "id, restaurant_id, visited_at, visitor_id"
                     )
                     .order("visited_at", {
                         ascending: false
@@ -2281,6 +2311,66 @@
 
 
     /* =========================================================
+       UNIQUE VISITORS
+       Counts distinct anonymous browser IDs.
+       Older visit rows without visitor_id are not counted
+       as unique visitors because their identity was not tracked.
+    ========================================================= */
+
+    function countUniqueVisitorsSince(
+        date,
+        restaurantId
+    ) {
+
+        const visitorIds = new Set();
+
+        visits.forEach(function(visit) {
+
+            if (!visit.visitor_id) {
+                return;
+            }
+
+            if (visitDate(visit) < date) {
+                return;
+            }
+
+            if (restaurantId && visit.restaurant_id !== restaurantId) {
+                return;
+            }
+
+            visitorIds.add(visit.visitor_id);
+
+        });
+
+        return visitorIds.size;
+    }
+
+
+    function countUniqueVisitorsAllTime(
+        restaurantId
+    ) {
+
+        const visitorIds = new Set();
+
+        visits.forEach(function(visit) {
+
+            if (!visit.visitor_id) {
+                return;
+            }
+
+            if (restaurantId && visit.restaurant_id !== restaurantId) {
+                return;
+            }
+
+            visitorIds.add(visit.visitor_id);
+
+        });
+
+        return visitorIds.size;
+    }
+
+
+    /* =========================================================
        DASHBOARD RENDER
     ========================================================= */
 
@@ -2341,6 +2431,14 @@
             .getElementById("statAllTime")
             .textContent =
             visits.length;
+
+
+        document
+            .getElementById("statUnique30")
+            .textContent =
+            countUniqueVisitorsSince(
+                startOfDaysAgo(29)
+            );
 
     }
 
@@ -3103,7 +3201,7 @@
                         <div class="mini-stat">
 
                             <div class="mini-stat-label">
-                                TODAY
+                                VISITS — TODAY
                             </div>
 
                             <div class="mini-stat-value">
@@ -3116,7 +3214,7 @@
                         <div class="mini-stat">
 
                             <div class="mini-stat-label">
-                                7 DAYS
+                                VISITS — 7 DAYS
                             </div>
 
                             <div class="mini-stat-value">
@@ -3129,7 +3227,7 @@
                         <div class="mini-stat">
 
                             <div class="mini-stat-label">
-                                30 DAYS
+                                VISITS — 30 DAYS
                             </div>
 
                             <div class="mini-stat-value">
@@ -4385,6 +4483,27 @@
                 )
                 .textContent =
                 countRestaurantAllTime(
+                    restaurantId
+                );
+
+
+            document
+                .getElementById(
+                    "restaurantAnalyticsUnique30"
+                )
+                .textContent =
+                countUniqueVisitorsSince(
+                    startOfDaysAgo(29),
+                    restaurantId
+                );
+
+
+            document
+                .getElementById(
+                    "restaurantAnalyticsUniqueAll"
+                )
+                .textContent =
+                countUniqueVisitorsAllTime(
                     restaurantId
                 );
 

@@ -7,6 +7,7 @@
     <title>GuestConnect</title>
     <!-- GuestConnect Customer Update: Small Advertising Contact -->
     <!-- GuestConnect Customer Update: Advertising Contact -->
+    <!-- GuestConnect Customer Update: Anonymous Visit Tracking -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -625,6 +626,61 @@
 
 
     // ============================================
+    // ANONYMOUS VISITOR ID
+    // One anonymous browser ID is shared across
+    // all GuestConnect restaurants on this domain.
+    // It contains no name, email or phone number.
+    // ============================================
+
+    function getVisitorId() {
+
+        const key = "guestconnect_visitor_id";
+
+        try {
+
+            let visitorId =
+                localStorage.getItem(key);
+
+            if (visitorId) {
+                return visitorId;
+            }
+
+            if (window.crypto && crypto.randomUUID) {
+                visitorId = crypto.randomUUID();
+            } else {
+                visitorId =
+                    "gc-" +
+                    Date.now().toString(36) +
+                    "-" +
+                    Math.random().toString(36).slice(2) +
+                    Math.random().toString(36).slice(2);
+            }
+
+            localStorage.setItem(
+                key,
+                visitorId
+            );
+
+            return visitorId;
+
+        } catch (error) {
+
+            // If browser storage is unavailable,
+            // use a temporary ID for this page load.
+            if (window.crypto && crypto.randomUUID) {
+                return crypto.randomUUID();
+            }
+
+            return
+                "gc-temp-" +
+                Date.now().toString(36) +
+                "-" +
+                Math.random().toString(36).slice(2);
+        }
+    }
+
+
+    // ============================================
     // RECORD VISIT
     // ============================================
 
@@ -641,7 +697,9 @@
                     "record_public_visit",
                     {
                         p_restaurant_id:
-                            currentRestaurantID
+                            currentRestaurantID,
+                        p_visitor_id:
+                            getVisitorId()
                     }
                 );
 
