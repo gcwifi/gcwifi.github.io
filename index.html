@@ -1,58 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuestConnect</title>
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            background: #f4f8ff;
-            color: #17324d;
-            text-align: center;
-            padding: 24px;
-            box-sizing: border-box;
-        }
-        .card {
-            max-width: 420px;
-            background: white;
-            border-radius: 18px;
-            padding: 32px 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.08);
-        }
-        h1 { margin: 0 0 10px; }
-        p { line-height: 1.5; color: #5b6b7a; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuestConnect</title>
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7f8;color:#17212b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}.card{width:100%;max-width:520px;background:#fff;border-radius:22px;padding:32px 24px;box-shadow:0 10px 35px rgba(0,0,0,.08);text-align:center}.logo{font-size:32px;font-weight:800;color:#111827}.logo span{color:#22c55e}.sub{color:#64748b;line-height:1.6;margin:14px 0 0} .spinner{width:34px;height:34px;border:4px solid #dbeafe;border-top-color:#22c55e;border-radius:50%;animation:spin .8s linear infinite;margin:24px auto 0}@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
-<div class="card">
-    <h1>GuestConnect</h1>
-    <p>Scan a GuestConnect QR code at a participating restaurant to view its Wi-Fi details.</p>
-</div>
-
+<div class="card"><div class="logo">Guest<span>Connect</span></div><p class="sub" id="message">Connecting you to the GuestConnect location…</p><div class="spinner" id="spinner"></div></div>
 <script>
-(function () {
-    const rawCode = window.location.search.substring(1).trim();
-
-    if (!rawCode) {
+(function(){
+    const raw = window.location.search.substring(1).trim();
+    if(raw){
+        let code = raw;
+        try { code = decodeURIComponent(raw); } catch(e) {}
+        window.location.replace("restaurant.html?code=" + encodeURIComponent(code.trim().toUpperCase()));
         return;
     }
-
-    const code = decodeURIComponent(rawCode);
-
-    if (!code) {
-        return;
-    }
-
-    window.location.replace(
-        "restaurant.html?code=" + encodeURIComponent(code)
-    );
+    document.getElementById("message").textContent = "Scan a GuestConnect QR code at a participating restaurant or accommodation to view its Wi-Fi details.";
+    document.getElementById("spinner").style.display = "none";
 })();
 </script>
+<noscript>Please enable JavaScript to use GuestConnect.</noscript>
 </body>
 </html>
